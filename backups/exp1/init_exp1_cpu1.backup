@@ -1,0 +1,47 @@
+#!/bin/sh
+
+BB=/bin/busybox
+
+# Mount essentials
+$BB mount -t proc proc /proc
+$BB mount -t sysfs sysfs /sys
+$BB mount -t devtmpfs devtmpfs /dev
+
+echo "[init] EXP1 START"
+
+# CPU info
+echo "==== CPU INFO ===="
+$BB cat /proc/cpuinfo
+
+# Memory info
+echo "==== MEMORY INFO ===="
+$BB cat /proc/meminfo
+
+# IRQ before load
+echo "==== IRQ BEFORE ===="
+$BB cat /proc/interrupts
+
+# CPU load
+echo "==== START CPU LOAD ===="
+i=0
+while [ $i -lt 4 ]; do
+  $BB sh -c 'while :; do :; done' &
+  i=$((i+1))
+done
+
+$BB sleep 10
+
+# IRQ after load
+echo "==== IRQ AFTER ===="
+$BB cat /proc/interrupts
+
+# Kernel messages
+echo "==== DMESG ===="
+$BB dmesg
+
+echo "[init] EXP1 END"
+
+# Clean shutdown
+$BB sync
+$BB poweroff -f
+

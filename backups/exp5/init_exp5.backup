@@ -1,0 +1,41 @@
+#!/bin/sh
+
+echo "[init] EXP5 START (MIXED FAULTS)"
+
+# Basic mounts
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev
+
+echo "===== MEMORY BEFORE ====="
+cat /proc/meminfo | grep MemFree
+
+echo "===== IRQ BEFORE ====="
+cat /proc/interrupts
+
+# ---- MEMORY PRESSURE ----
+echo "===== START MEMORY PRESSURE ====="
+i=0
+while [ $i -lt 20 ]; do
+    dd if=/dev/zero of=/tmp/mem_$i bs=1M count=5 2>/dev/null
+    i=$((i+1))
+done
+
+# ---- INTERRUPT ACTIVITY ----
+echo "===== START IRQ ACTIVITY ====="
+i=0
+while [ $i -lt 500 ]; do
+    echo $i > /proc/uptime
+    i=$((i+1))
+done
+
+echo "===== MEMORY AFTER ====="
+cat /proc/meminfo | grep MemFree
+
+echo "===== IRQ AFTER ====="
+cat /proc/interrupts
+
+echo "[init] EXP5 END"
+
+poweroff -f
+

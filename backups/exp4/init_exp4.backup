@@ -1,0 +1,38 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin
+
+echo "[init] EXP4 START (MEMORY PRESSURE)"
+
+# ---- mounts ----
+/bin/busybox mount -t proc proc /proc
+/bin/busybox mount -t sysfs sysfs /sys
+/bin/busybox mount -t devtmpfs devtmpfs /dev
+
+echo "===== MEMORY BEFORE ====="
+/bin/busybox cat /proc/meminfo
+
+echo "===== START MEMORY PRESSURE ====="
+
+# Allocate memory gradually (safe, controlled)
+i=0
+while [ $i -lt 150 ]; do
+  /bin/busybox dd if=/dev/zero of=/tmp/mem_$i bs=1M count=10 2>/dev/null &
+  i=$((i+1))
+done
+
+# allow reclaim to kick in
+/bin/busybox sleep 8
+
+echo "===== MEMORY AFTER ====="
+/bin/busybox cat /proc/meminfo
+
+echo "===== DMESG ====="
+/bin/busybox dmesg
+
+echo "[init] EXP4 END"
+
+# ---- shutdown ----
+/bin/busybox poweroff -f
+while true; do /bin/busybox sleep 1; done
+
