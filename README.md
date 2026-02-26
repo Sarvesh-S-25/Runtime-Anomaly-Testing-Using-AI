@@ -23,7 +23,7 @@ The system systematically tests the custom kernel across three CPU configuration
 * `automated_running/`: Automation bash scripts tailored to trigger each specific experiment's fault condition.
 * `backups/`: Contains the custom initialization scripts (e.g., `init_exp3.backup`) required for each experiment.
 * `datasets/`: Aggregated and processed CSV datasets ready for model training.
-* `logs/`: Raw telemetry logs categorized by experiment and CPU count (archived due to volume).
+* `logs_exp_no/`: Raw telemetry logs categorized by experiment and CPU count (zip file).
 * `model.ipynb`: Jupyter Notebook containing the data preprocessing and machine learning model implementation.
 * `run-qemu.sh`: Main entry script to boot the custom kernel environment in QEMU.
 
