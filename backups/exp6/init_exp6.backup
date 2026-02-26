@@ -1,0 +1,41 @@
+#!/bin/sh
+
+BB=/bin/busybox
+
+# Mount essentials
+$BB mount -t proc proc /proc
+$BB mount -t sysfs sysfs /sys
+$BB mount -t devtmpfs devtmpfs /dev
+
+echo "[init] EXP6 START (IRQ + SOFTIRQ STORM)"
+
+# IRQ before
+echo "==== IRQ BEFORE ===="
+$BB cat /proc/interrupts
+
+echo "==== SOFTIRQ BEFORE ===="
+$BB cat /proc/softirqs
+
+# IRQ + scheduler storm
+echo "==== START IRQ STORM ===="
+i=0
+while [ $i -lt 300 ]; do
+  $BB sh -c 'while :; do :; done' &
+  i=$((i+1))
+done
+
+$BB sleep 8
+
+# IRQ after
+echo "==== IRQ AFTER ===="
+$BB cat /proc/interrupts
+
+echo "==== SOFTIRQ AFTER ===="
+$BB cat /proc/softirqs
+
+echo "[init] EXP6 END"
+
+# Clean shutdown (same as EXP1)
+$BB sync
+$BB poweroff -f
+

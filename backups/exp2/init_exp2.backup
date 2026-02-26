@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# Hard PATH for BusyBox
+export PATH=/bin:/sbin
+
+echo "===== EXP2 START ====="
+
+# Mandatory mounts
+/bin/busybox mount -t proc proc /proc
+/bin/busybox mount -t sysfs sysfs /sys
+/bin/busybox mount -t devtmpfs devtmpfs /dev
+
+echo "===== CPU INFO ====="
+/bin/busybox cat /proc/cpuinfo
+
+echo "===== MEMORY INFO ====="
+/bin/busybox cat /proc/meminfo
+
+echo "===== IRQ BEFORE ====="
+/bin/busybox cat /proc/interrupts
+
+echo "===== START CPU LOAD ====="
+
+CPUS=$(/bin/busybox nproc)
+i=0
+while [ "$i" -lt "$CPUS" ]; do
+    /bin/busybox sh -c "while :; do :; done" &
+    i=$((i+1))
+done
+
+/bin/busybox sleep 10
+
+echo "===== IRQ AFTER ====="
+/bin/busybox cat /proc/interrupts
+
+echo "===== DMESG ====="
+/bin/busybox dmesg
+
+echo "===== EXP2 END ====="
+
+# NEVER let init exit
+/bin/busybox poweroff -f
+
+# Failsafe
+while true; do /bin/busybox sleep 1; done
+

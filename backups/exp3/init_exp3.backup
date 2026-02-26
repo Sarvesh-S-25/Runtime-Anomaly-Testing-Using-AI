@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# Ensure BusyBox tools are found
+export PATH=/bin:/sbin
+
+echo "[init] EXP3 START"
+
+# ---- mandatory mounts ----
+/bin/busybox mount -t proc proc /proc
+/bin/busybox mount -t sysfs sysfs /sys
+/bin/busybox mount -t devtmpfs devtmpfs /dev
+
+# ---- IRQ BEFORE ----
+echo "===== IRQ BEFORE ====="
+/bin/busybox cat /proc/interrupts
+
+# ---- INTERRUPT STORM ----
+echo "===== START INTERRUPT STORM ====="
+
+i=0
+while [ $i -lt 200 ]; do
+  /bin/busybox sleep 0 &
+  i=$((i+1))
+done
+
+/bin/busybox sleep 5
+
+# ---- IRQ AFTER ----
+echo "===== IRQ AFTER ====="
+/bin/busybox cat /proc/interrupts
+
+echo "[init] EXP3 END"
+
+# ---- clean shutdown ----
+/bin/busybox poweroff -f
+
+# failsafe (should not reach here)
+while true; do /bin/busybox sleep 1; done
+
