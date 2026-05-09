@@ -68,7 +68,8 @@ Model training and evaluation are handled via the provided Jupyter Notebook.
 
 1. Open `AI_Runtime_Anomaly_Detction.ipynb` in a Jupyter environment.
 2. Ensure the data loader is pointed to `dataset_modified.csv` located within the `datasets/` directory.
-3. Execute the notebook cells to preprocess the data, train the classifier, and output the validation accuracy for the fault states.
+3. download the `Models` file and upload it to the designated drive .
+4. Execute the notebook cells to preprocess the data, train the classifier, and output the validation accuracy for the fault states.
 
 ## Authors
 Sarvesh Sakthivel 
